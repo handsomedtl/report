@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="datasetconf">
+	<resultMap id="ConditionMeta" type="com.asiainfo.edata.meta.ConditionMeta">
+		<id column="DATASET_ID" property="datasetId" jdbcType="VARCHAR" />
+		<result column="COND" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+		<result column="REQUIRED" property="required" jdbcType="CHAR" />
+		<result column="SRC_TYPE" property="srcType" />
+		<result column="VALIDATOR" property="validator" jdbcType="CLOB" />
+		<result column="DATA_TYPE" property="datatype" jdbcType="INTEGER" />
+		<result column="INOUT" property="inout" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="FieldMeta" type="com.asiainfo.edata.meta.FieldMeta">
+		<id column="DATASET_ID" property="datasetId" jdbcType="VARCHAR" />
+		<result column="FIELD" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+		<result column="DATA_TYPE" property="dataType" jdbcType="VARCHAR" />
+		<result column="CONVERTER_SQL_EXP" property="converterSqlexp" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="EDatasetMeta" type="com.asiainfo.edata.meta.EDatasetMeta">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="CLOB" />
+		<result column="CONFIG" property="config" jdbcType="CLOB" />
+		<result column="SUMMARY_CONFIG" property="summaryConfig" jdbcType="CLOB" />
+		<result column="RIGHT_CODE" property="rightCode" jdbcType="VARCHAR" />
+		<result column="SERVICEABLE" property="serviceable" jdbcType="CHAR" />
+		<result column="DATA_ROUTE" property="dataRoute" jdbcType="DECIMAL" />
+		<result column="RESOURCE_TYPE" property="resourceType"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_STAFF" property="updateStaff" jdbcType="VARCHAR" />
+		<result column="UPDATE_DEPART" property="updateDepart"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="DATE" />
+		<result column="IS_CUST_DEF" property="isCustDef" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="datasetCategory" type="com.asiainfo.edata.meta.EDatasetCategory">
+		<id column="category_id" property="id" />
+		<result column="name" property="name" />
+		<result column="type" property="type" />
+		<result column="parent_cat" property="parentid" />
+		<result column="show_order" property="showorder" />
+		<result column="update_date" property="upddate" />
+		<result column="update_staff" property="updstaff" />
+		<result column="update_depart" property="upddepart" />
+	</resultMap>
+	<resultMap id="CustRptDesc" type="com.asiainfo.ereport.meta.CustRptDesc">
+		<id column="reportId" property="reportId" jdbcType="VARCHAR" />
+		<result column="reportName" property="reportName" jdbcType="VARCHAR" />
+		<result column="condName" property="condName" jdbcType="VARCHAR" />
+		<result column="displayFieldName" property="displayFieldName" jdbcType="VARCHAR" />
+	</resultMap>
+    <select id="getCustRptDescs" parameterType="java.util.Map"
+		resultMap="CustRptDesc">
+    
+        SELECT a.NAME reportName,a.id reportId,
+	       to_char(wm_concat(DISTINCT c1.NAME || '('||c1.cond||')')) condName,
+	       to_char(wm_concat(DISTINCT d1.title || '('||d1.field||')')) displayFieldName
+		  FROM td_rpt_report a,
+		       (SELECT a.report_id, a.dataset_id, a.comp_id
+		          FROM td_rpt_report_component a
+		         WHERE lower(a.TYPE) = 'grid') b,
+		   (select dataset_id from td_rpt_dataset_cond where 1=1
+		   <if test="condname != null and condname != ''">
+				and name like '%'||#{condname}||'%'
+		   </if>
+		   )c,
+		   (select grid_id from  td_ui_grid_col where 1=1
+		    <if test="fieldname != null and fieldname != ''">
+				and title like '%'||#{fieldname}||'%'
+		   </if>
+		   )d,
+		   td_rpt_dataset_cond c1,
+		   td_ui_grid_col d1
+		 WHERE a.type='1'
+		   AND a.id = b.report_id
+		   AND b.dataset_id = c.dataset_id
+		   AND b.comp_id = d.grid_id
+		   AND b.dataset_id = c1.dataset_id
+		   AND b.comp_id = d1.grid_id
+		   AND a.ownerID=#{staffid}
+		   <if test="rptname != null and rptname != ''">
+				and a.name like '%'||#{rptname}||'%'
+		   </if>
+		 GROUP BY a.NAME, a.id 
+    </select>
+	<select id="getConditionMetas" parameterType="java.lang.String"
+		resultMap="ConditionMeta">
+		SELECT
+		t.*
+		FROM td_rpt_dataset_cond t
+		WHERE
+		t.dataset_id=#{_parameter}
+		order by CONORDER
+	</select>
+	<select id="getFieldMetas" parameterType="java.lang.String"
+		resultMap="FieldMeta">
+		SELECT
+		t.*
+		FROM td_rpt_dataset_col t
+		WHERE
+		t.dataset_id=#{_parameter}
+		order by t.show_order,t.data_type desc
+	</select>
+	<select id="oneEDatasetMeta" parameterType="java.lang.String"
+		resultMap="EDatasetMeta">
+		SELECT
+		t.*
+		FROM td_rpt_dataset t
+		WHERE t.id=#{_parameter}
+	</select>
+	<select id="existsEDatasetMeta" parameterType="com.asiainfo.edata.meta.EDatasetMeta"
+		resultMap="EDatasetMeta">
+		SELECT
+		t.*
+		FROM td_rpt_dataset t
+		WHERE t.id=#{id}
+	</select>
+	
+	<update id="updateEDatasetMeta" parameterType="com.asiainfo.edata.meta.EDatasetMeta">
+	     update  td_rpt_dataset 
+	      <set>
+			<if test="content !=null and content !='' ">
+				CONTENT=#{content,jdbcType=CLOB},
+			</if>
+			<if test=" summaryConfig !=null and summaryConfig !='' ">
+				SUMMARY_CONFIG=#{summaryConfig,jdbcType=CLOB},
+			</if>
+			</set>
+		
+		where id=#{id}
+	</update>
+	
+	<select id="getEDatasetCategorys" parameterType="java.util.Map"
+		resultMap="datasetCategory">
+		select * from td_s_category
+	</select>
+	<select id="getHaveDatasetCategorys" parameterType="java.util.Map"
+		resultMap="datasetCategory">
+		select distinct a.*
+       from td_s_category a
+       start with exists
+       (select 1 from td_rpt_dataset b where a.category_id = b.category and b.type=1 and b.resource_type='REF'
+       
+       <if test="category != null and category != ''">
+				and a.category_id like #{category}
+		  </if>
+       )
+       connect by prior a.parent_cat = a.category_id
+	</select>
+	<select id="datasetcategoryid" parameterType="java.util.Map"
+		resultMap="EDatasetMeta">
+		SELECT
+		t.*
+		FROM td_rpt_dataset t
+		 where t.type=1 and t.resource_type='REF'
+		 <if test="categoryid != null and categoryid != ''">
+				and t.category = #{categoryid}
+			</if>
+			<if test="category != null and category != ''">
+				and t.category like #{category}
+			</if>
+			<if test="name != null and name != ''">
+				and (name like '%'||#{name}||'%' or remark like '%'||#{name}||'%')
+			</if>
+			<if test="staffId != null and staffId != ''">
+				and (update_staff=#{staffId})
+			</if>
+	</select>
+	<insert id="insertEDatasetMeta" parameterType="com.asiainfo.edata.meta.EDatasetMeta">
+		insert into
+		td_rpt_dataset
+		(
+			id,category,name,type,remark,content,config,right_code,serviceable,data_route,
+			resource_type,update_staff,update_depart,update_date,SUMMARY_CONFIG
+		)
+		values(
+			#{id,jdbcType=VARCHAR},#{category,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{type,jdbcType=NUMERIC},#{remark,jdbcType=VARCHAR},#{content,jdbcType=CLOB},#{config,jdbcType=CLOB},
+			#{rightCode,jdbcType=VARCHAR},#{serviceable,jdbcType=CHAR},#{dataRoute,jdbcType=NUMERIC},#{resourceType,jdbcType=VARCHAR},
+			#{updateStaff,jdbcType=VARCHAR},#{updateDepart,jdbcType=VARCHAR},#{updateDate,jdbcType=DATE},
+			#{summaryConfig,jdbcType=CLOB}
+		)
+	</insert>
+	<insert id="insertFieldMeta" parameterType="com.asiainfo.edata.meta.FieldMeta">
+		insert into
+		td_rpt_dataset_col
+		(
+			dataset_id,field,name,data_type,biz_type,CONVERTER_SQL_EXP
+		)
+		values(
+			#{datasetId,jdbcType=VARCHAR},#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{dataType,jdbcType=NUMERIC},#{bizType,jdbcType=NUMERIC},#{converterSqlexp,jdbcType=VARCHAR}
+			)
+	</insert>
+	<insert id="insertConditionMeta" parameterType="com.asiainfo.edata.meta.ConditionMeta">
+		insert into
+		td_rpt_dataset_cond
+		(
+			dataset_id,cond,name,required,src_type,validator,data_type,inout,conorder
+		)
+		values(
+			#{datasetId,jdbcType=VARCHAR},#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{required,jdbcType=CHAR},#{srcType,jdbcType=NUMERIC},#{validator,jdbcType=CLOB},#{datatype,jdbcType=NUMERIC},#{inout,jdbcType=NUMERIC},#{conorder,jdbcType=NUMERIC}
+			)
+	</insert>
+	<delete id="delEDatasetMeta" parameterType="java.lang.String">
+	  delete from td_rpt_dataset where id=#{_parameter,jdbcType=VARCHAR}
+	</delete>
+	<delete id="delFieldMeta" parameterType="java.lang.String">
+	  delete from td_rpt_dataset_col where dataset_id=#{_parameter,jdbcType=VARCHAR}
+	</delete>
+	<delete id="delConditionMeta" parameterType="java.lang.String">
+	  delete from td_rpt_dataset_cond where dataset_id=#{_parameter,jdbcType=VARCHAR}
+	</delete>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="group">
+	<!-- 获取审批角色信息 -->
+	
+    <select id="getGroupInfos" resultType="com.asiainfo.eframe.entity.GroupInfo"
+		parameterType="java.util.Map">
+		SELECT A.DATA_ID     GROUPID,
+       		   A.DATA_NAME GROUPNAME
+           FROM TD_S_STATIC A
+ 		   WHERE 1=1
+ 		   	   AND A.TYPE_ID = 'APPROVE_STAFF_TYPE'
+	</select>
+	
+	<select id="oneGroupInfo" resultType="com.asiainfo.eframe.entity.GroupInfo"
+		parameterType="java.util.Map">
+		SELECT A.DATA_ID     GROUPID,
+       		   B.DATA_NAME GROUPNAME,
+           FROM TD_S_STATIC A
+ 		   WHERE 1=1
+ 		   	   AND A.TYPE_ID = 'APPROVE_STAFF_TYPE'
+		   <if test="groupid != null and groupid !=''">
+			   AND A.DATA_ID = #{groupid}
+		   </if>
+	</select>
+	<select id="getGroupInfosByUser" resultType="com.asiainfo.eframe.entity.GroupInfo"
+		parameterType="java.util.Map">
+		SELECT A.DATA_ID     GROUPID,
+       		   A.DATA_NAME GROUPNAME
+           FROM 
+           		TD_S_STATIC A 
+           		INNER JOIN TF_H_APPROVE_STAFF B ON A.DATA_ID = B.APPROVE_STAFF_TYPE
+ 		   WHERE 1=1
+ 		   AND A.TYPE_ID = 'APPROVE_STAFF_TYPE'
+		   <if test="username != null and username !=''">
+			    AND B.STAFF_ID = #{username}
+		   </if>
+	</select>
+</mapper>

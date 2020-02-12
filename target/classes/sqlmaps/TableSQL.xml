@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="table">
+	<select id="oneTableInfo" parameterType="java.lang.String"
+		resultType="com.asiainfo.eframe.entity.TableInfo">
+		<![CDATA[
+		select * from TD_UI_TABLE
+		]]>
+		<where>
+			<if test="_parameter != null and _parameter !=''">
+				and tableid=#{_parameter}
+			</if>
+		</where>
+	</select>
+	<select id="getTableColumns" parameterType="java.lang.String"
+		resultType="com.asiainfo.eframe.entity.TableColumn">
+		select * from TD_UI_TABLE_HEADER
+		<where>
+			<if test="_parameter != null and _parameter !=''">
+				and tableid=#{_parameter}
+			</if>
+		</where>
+	</select>
+</mapper>

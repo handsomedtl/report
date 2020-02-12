@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="uigridconf">
+	<resultMap id="UiGrid"
+		type="com.asiainfo.ewebframe.ui.grid.meta.UIGridMeta">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" />
+		<result column="DATA_SRC" property="dataSrc" jdbcType="VARCHAR" />
+		<result column="CONFIG" property="config" jdbcType="CLOB" />
+		<result column="GRID_CSS" property="gridCss" jdbcType="VARCHAR" />
+		<result column="PAGING" property="paging" jdbcType="CHAR" />
+		<result column="WIDTH" property="width" />
+		<result column="HEIGHT" property="height" />
+		<result column="ROWCSS" property="rowCss" jdbcType="VARCHAR" />
+		<result column="ROW_RENDER" property="rowRender" jdbcType="CLOB" />
+		<result column="ROW_AUTO_HEIGHT" property="rowAutoHeight"
+			jdbcType="CHAR" />
+		<result column="ROW_GROUP" property="rowGroup" jdbcType="CHAR" />
+		<result column="ROW_GROUP_FIELD" property="rowGroupField"
+			jdbcType="VARCHAR" />
+		<result column="HEADER" property="header" jdbcType="CLOB" />
+		<result column="PARENT_FIELD" property="parentField" jdbcType="VARCHAR" />
+		<result column="SUB_DATA_SRC" property="subDataSrc" jdbcType="VARCHAR" />
+		<result column="ROW_EXPANDER" property="rowExpander" jdbcType="CLOB" />
+		<result column="ROW_SUMMARY" property="rowSummary" />
+		<result column="ROW_SUMMARY_CONFIG" property="rowSummaryConfig"
+			jdbcType="CLOB" />
+		<result column="FROZEN_ROWS" property="frozenRows" jdbcType="VARCHAR" />
+		<result column="COLUMN_SUMMARY" property="columnSummary"
+			jdbcType="CHAR" />
+		<result column="CHECK_BOX" property="checkBox" jdbcType="CHAR" />
+		<result column="MULTI_SELECT" property="multiSelect" jdbcType="CHAR" />
+		<result column="LARGE_DATASET" property="largeDataset"
+			jdbcType="CHAR" />
+		<result column="FUNCTION_LIST" property="functionList"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_STAFF" property="updateStaff" jdbcType="VARCHAR" />
+		<result column="UPDATE_DEPART" property="updateDepart"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="DATE" />
+		<result column="ID_FIELD" property="idField" jdbcType="VARCHAR" />
+		<result column="HAS_SUB_FIELD" property="hasSubField" jdbcType="VARCHAR" />
+		<result column="EXT_SCRIPT" property="extScript" jdbcType="CLOB" />
+	</resultMap>
+	<resultMap id="UiGridCol"
+		type="com.asiainfo.ewebframe.ui.grid.meta.UIGridColMeta">
+		<id column="GRID_ID" property="gridId" jdbcType="VARCHAR" />
+		<result column="FIELD" property="field" jdbcType="VARCHAR" />
+		<result column="TITLE" property="title" jdbcType="VARCHAR" />
+		<result column="ALIGN" property="align" jdbcType="VARCHAR" />
+		<result column="COMPUTABLE" property="computable" jdbcType="CHAR" />
+		<result column="RENDER" property="render" jdbcType="CLOB" />
+		<result column="CELL_STYLE" property="cellStyle" jdbcType="VARCHAR" />
+		<result column="SHOW_ORDER" property="showOrder" />
+		<result column="FROZEN" property="frozen" jdbcType="CHAR" />
+		<result column="RESIZEABLE" property="resizeable" jdbcType="CHAR" />
+		<result column="FORMATTER" property="formatter" jdbcType="VARCHAR" />
+		<result column="FOOTER_FORMATTER" property="footerFormatter"
+			jdbcType="VARCHAR" />
+		<result column="FOOTER_STYLE" property="footerStyle" jdbcType="VARCHAR" />
+		<result column="ROW_MERGE" property="rowMerge" jdbcType="CHAR" />
+		<result column="FOOTER_ALIGN" property="footerAlign" jdbcType="VARCHAR" />
+		<result column="HREF" property="href" jdbcType="VARCHAR" />
+		
+	</resultMap>
+	<select id="oneUIGridMeta" parameterType="java.lang.String"
+		resultMap="UiGrid">
+		select
+		t.*
+		from td_ui_grid t
+		where t.id=#{_parameter}
+	</select>
+	<select id="getUIGridColMetas" parameterType="java.lang.String"
+		resultMap="UiGridCol">
+		select
+		t.*
+		from td_ui_grid_col t
+		where t.grid_id=#{_parameter}
+	</select>
+	<select id="existsUIGridMeta" parameterType="com.asiainfo.ewebframe.ui.grid.meta.UIGridMeta"
+		resultMap="UiGridCol">
+		select
+		t.*
+		from td_ui_grid t
+		where t.id=#{id}
+	</select>
+	<update id="updateUIGridMeta" parameterType="com.asiainfo.ewebframe.ui.grid.meta.UIGridMeta">
+		update td_ui_grid 
+		<set>
+			<if test="name != null and name !=''">
+				name = #{name},
+			</if>
+			<if test="type != null and type !=''">
+				type = #{type},
+			</if>
+			<if test="dataSrc != null and dataSrc !=''">
+				data_src = #{dataSrc},
+			</if>
+			<if test="config != null and config !=''">
+				config = #{config},
+			</if>
+			<if test="paging != null and paging !=''">
+				paging = #{paging},
+			</if>
+			<if test="header != null and header !=''">
+				header = #{header},
+			</if>
+			<if test="rowSummaryConfig != null and rowSummaryConfig !=''">
+				ROW_SUMMARY_CONFIG = #{rowSummaryConfig},
+			</if>
+			<if test="rowSummary != null and rowSummary !=''">
+				row_summary = #{rowSummary},
+			</if>
+			<if test="extScript != null and extScript !=''">
+				EXT_SCRIPT = #{extScript},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	<insert id="insertUIGridMeta" parameterType="com.asiainfo.ewebframe.ui.grid.meta.UIGridMeta">
+		insert into
+		td_ui_grid
+		(
+		id,name,type,data_src,header,
+		frozenheader,function_list,id_field,paging,config,row_summary,
+		width,height,grid_css,rowcss,parent_field,sub_data_src,has_sub_field,
+		row_render,row_auto_height,row_group,row_group_field,row_expander,frozen_rows,column_summary,check_box,multi_select,large_dataset,
+		update_staff,update_depart,update_date,ROW_SUMMARY_CONFIG,EXT_SCRIPT
+		)
+		values(
+		#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{type,jdbcType=NUMERIC},#{dataSrc,jdbcType=VARCHAR},#{header,jdbcType=CLOB},
+		#{frozenheader,jdbcType=CLOB},#{functionList,jdbcType=CLOB},#{idField,jdbcType=VARCHAR},#{paging,jdbcType=CHAR},#{config,jdbcType=CLOB},
+		#{rowSummary,jdbcType=NUMERIC},#{width,jdbcType=NUMERIC},#{height,jdbcType=NUMERIC},#{gridCss,jdbcType=VARCHAR},#{rowCss,jdbcType=VARCHAR},#{parentField,jdbcType=VARCHAR},
+		#{subDataSrc,jdbcType=VARCHAR},#{hasSubField,jdbcType=CHAR},#{rowRender,jdbcType=CLOB},#{rowAutoHeight,jdbcType=CHAR},
+		#{rowGroup,jdbcType=CHAR},#{rowGroupField,jdbcType=VARCHAR},#{rowExpander,jdbcType=VARCHAR},#{frozenRows,jdbcType=VARCHAR},
+		#{columnSummary,jdbcType=VARCHAR},#{checkBox,jdbcType=CHAR},#{multiSelect,jdbcType=VARCHAR},#{largeDataset,jdbcType=VARCHAR},
+		#{updateStaff,jdbcType=VARCHAR},#{updateDepart,jdbcType=VARCHAR},#{updateDate,jdbcType=DATE},#{rowSummaryConfig,jdbcType=CLOB}
+		,#{extScript,jdbcType=CLOB}
+		)
+	</insert>
+	<insert id="insertUIGridColMeta" parameterType="com.asiainfo.ewebframe.ui.grid.meta.UIGridColMeta">
+		insert into
+		td_ui_grid_col
+		(
+		grid_id,field,title,align,computable,render,
+		width,cell_style,show_order,frozen,resizeable,formatter,FOOTER_STYLE,FOOTER_FORMATTER,FOOTER_ALIGN,HREF
+		)
+		values(
+		#{gridId,jdbcType=VARCHAR},#{field,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{align,jdbcType=VARCHAR},#{computable,jdbcType=VARCHAR},
+		#{render,jdbcType=CLOB},#{width,jdbcType=NUMERIC},#{cellStyle,jdbcType=VARCHAR},#{showOrder,jdbcType=NUMERIC},#{frozen,jdbcType=VARCHAR},
+		#{resizeable,jdbcType=VARCHAR},#{formatter,jdbcType=VARCHAR},#{footerStyle,jdbcType=VARCHAR},#{footerFormatter,jdbcType=VARCHAR},
+		#{footerAlign,jdbcType=VARCHAR} ,#{href,jdbcType=VARCHAR} 
+		)
+	</insert>
+	<delete id="delUIGridMeta" parameterType="java.lang.String" >
+	   delete from  td_ui_grid where id=#{_parameter,jdbcType=VARCHAR}
+	</delete>
+	<delete id="delUIGridColMeta" parameterType="java.lang.String" >
+	   delete from  td_ui_grid_col where grid_id=#{_parameter,jdbcType=VARCHAR}
+	</delete>
+	<delete id="delGridCols" parameterType="java.util.Map" >
+	   delete from  td_ui_grid_col t where t.grid_id=#{grid_id}
+	</delete>
+</mapper>

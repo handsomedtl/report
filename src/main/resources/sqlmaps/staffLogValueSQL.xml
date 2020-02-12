@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="stafflog">
+	<!-- 获取展会信息 -->
+	<select id="getStaffLogValues" resultType="com.asiainfo.eframe.entity.StaffLogValue"
+		parameterType="java.util.Map">
+		SELECT A.LOG_ID LOGID,A.STAFF_ID STAFFID,A.IN_TIME INTIME,A.OUT_TIME OUTTIME
+		FROM TL_M_STAFFLOG A 
+		WHERE 1=1
+		<if test="staffid != null and staffid !=''">
+			AND A.STAFF_ID = #{staffid}
+		</if>
+		<if test="logid != null and logid !=''">
+			AND A.LOG_ID = #{logid}
+		</if>
+		 AND A.OUT_TIME IS NULL
+	</select>
+</mapper>

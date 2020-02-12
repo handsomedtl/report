@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="formelement">
+	<!-- 获取插件信息 -->
+	<resultMap type="com.asiainfo.ewebframe.ui.form.def.FormElementDef"
+		id="formElementDef">
+		<id column="ELEMENT_ID" property="id" />
+		<result column="ELEMENT_TYPE" property="type" />
+		<result column="ELEMENT_CATEGORY" property="catecory" />
+		<result column="ELEMENT_NAME" property="name" />
+		<result column="ELEMENT_PARAM" property="param" />
+		<result column="ELEMENT_LABLE" property="label" />
+		<result column="ELEMENT_HELP" property="help" />
+		<result column="ELEMENT_TEMPLATE" property="tempplate" />
+		<result column="ELEMENT_VIEW_TEMPLATE" property="viewtempplate" />
+	</resultMap>
+	<select id="oneFormElementDef" resultMap="formElementDef"
+		parameterType="java.lang.Long">
+		SELECT t.*
+		FROM TD_UI_ELEMENT T where t.
+		ELEMENT_ID=#{_parameter}
+	</select>
+	<delete id="delFormElement" parameterType="java.lang.String">
+	   delete from td_ui_template_element t where t.template_id=#{_parameter,jdbcType=VARCHAR}
+	</delete>
+</mapper>

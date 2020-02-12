@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<display-name>asiainfo-workflow</display-name>
+	<description>模板项目</description>
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:/log4j.properties</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jExposeWebAppRoot</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+            classpath*:/applicationContext*.xml
+        </param-value>
+	</context-param>
+	<context-param>
+	   <param-name>spring.profiles.default</param-name>
+	   <param-value>development</param-value>
+	</context-param>
+	<!-- 
+	<context-param>
+		<param-name>spring.profiles.active</param-name>
+		<param-value>${profiles.active}</param-value>
+	</context-param> -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>*.jhtml</url-pattern>
+	</filter-mapping>
+	
+	<!-- <filter>
+		<filter-name>autoLoginFilter</filter-name>
+		<filter-class>com.asiainfo.ewebframe.filter.AutoLoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>autoLoginFilter</filter-name>
+		<url-pattern>*.jhtml</url-pattern>		
+	</filter-mapping> -->
+	
+	
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>encodingConvertFilter</filter-name>
+		<filter-class>com.asiainfo.ewebframe.filter.EncodingConvertFilter</filter-class>
+		<init-param>
+			<param-name>fromEncoding</param-name>
+			<param-value>ISO-8859-1</param-value>
+		</init-param>
+		<init-param>
+			<param-name>toEncoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingConvertFilter</filter-name>
+		<url-pattern>*.jhtml</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>springmvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:/applicationContext-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>*.jhtml</url-pattern>
+	</servlet-mapping>
+	<!-- -->
+	<servlet>
+		<servlet-name>spring-ws</servlet-name>
+		<servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:/applicationContext-ws.xml</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>spring-ws</servlet-name>
+		<url-pattern>*.wsdl</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>spring-ws</servlet-name>
+		<url-pattern>/WSService/*</url-pattern>
+	</servlet-mapping>
+	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<jsp-config>
+		<taglib>
+			<taglib-uri>/tld/asiainfo.tld</taglib-uri>
+			<taglib-location>/tld/asiainfo.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>login/tologin.jhtml</welcome-file>
+	</welcome-file-list>
+	<mime-mapping>
+        <extension>js</extension>
+        <mime-type>application/javascript</mime-type>
+    </mime-mapping>
+</web-app>

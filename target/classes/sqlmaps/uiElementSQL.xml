@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="uielement">
+	<resultMap type="com.asiainfo.ewebframe.ui.form.def.FormElement"
+		id="formElement">
+		<id column="TEMPLATE_ID" property="templateid" />
+		<result column="ELEMENT_ID" property="elementid" />
+		<result column="ELEMENT_CODE" property="elementcode" />
+		<result column="SHOW_ORDER" property="order" />
+		<result column="ELEMENT_LABLE" property="lable" />
+		<result column="AREA_CODE" property="areacode" />
+		<result column="SHOW_RIGHT" property="showright" />
+		<result column="MODIFY_RIGHT" property="modifyright" />
+		<result column="FORM_PROPERTY" property="formproperty" />
+		<result column="VALIATE_EXPR" property="validexpr" />
+		<result column="ELEMENT_REQUIRED" property="required" />
+		<result column="INIT_VALUE" property="initvalue" />
+		<result column="EXTRA_PARAM" property="extraparam" />
+		<result column="ROW_INDEX" property="rowindex" />
+		<result column="COL_INDEX" property="colindex" />
+		<result column="COL_SPAN" property="colspan" />
+	</resultMap>
+	<select id="getFormElements" parameterType="java.util.Map"
+		resultMap="formElement">
+		select * from td_ui_template_element a
+		<where>
+			<if test="templateid != null and templateid !=''">
+				and a.template_id = #{templateid}
+			</if>
+			<if test="elementid != null and elementid !=''">
+				and a.element_id = #{elementid}
+			</if>
+			<if test="elementcode != null and elementcode !=''">
+				and a.element_code = #{elementcode}
+			</if>
+		</where>
+		order by SHOW_ORDER asc
+	</select>
+
+	<select id="oneFormElement" parameterType="java.util.Map"
+		resultMap="formElement">
+		select * from td_ui_template_element a
+		<where>
+			<if test="templateid != null and templateid !=''">
+				and a.template_id = #{templateid}
+			</if>
+			<if test="elementid != null and elementid !=''">
+				and a.element_id = #{elementid}
+			</if>
+			<if test="elementcode != null and elementcode !=''">
+				and a.element_code = #{elementcode}
+			</if>
+		</where>
+		order by SHOW_ORDER asc
+	</select>
+
+	<select id="existsFormElement" parameterType="com.asiainfo.ewebframe.ui.form.def.FormElement"
+		resultMap="formElement">
+		select * from td_ui_template_element a where a.template_id =
+		#{templateid} and a.element_code = #{elementcode}
+	</select>
+	<update id="updateFormElement" parameterType="com.asiainfo.ewebframe.ui.form.def.FormElement">
+		update td_ui_template_element a
+		<set>
+			<if test="order != null and order !=''">
+				a.SHOW_ORDER = #{order},
+			</if>
+			<if test="elementcode != null and elementcode !=''">
+				a.ELEMENT_CODE = #{elementcode},
+			</if>
+			<if test="lable != null and lable !=''">
+				a.ELEMENT_LABLE = #{lable},
+			</if>
+			<if test="areacode != null and areacode !=''">
+				a.AREA_CODE = #{areacode},
+			</if>
+			<if test="modifyright != null and modifyright !=''">
+				a.MODIFY_RIGHT = #{modifyright},
+			</if>
+			<if test="required != null and required !=''">
+				a.ELEMENT_REQUIRED = #{required},
+			</if>
+			<if test="initvalue != null and initvalue !=''">
+				a.INIT_VALUE = #{required},
+			</if>
+			<if test="extraparam != null and extraparam !=''">
+				a.EXTRA_PARAM = #{extraparam},
+			</if>
+			<if test="rowindex != null and rowindex !=''">
+				a.ROW_INDEX = #{rowindex},
+			</if>
+			<if test="colindex != null and colindex !=''">
+				a.COL_INDEX = #{colindex},
+			</if>
+			<if test="colspan != null and colspan !=''">
+				a.COL_SPAN = #{colspan},
+			</if>
+		</set>
+		where a.TEMPLATE_ID=#{templateid} and ELEMENT_ID=#{elementid}
+	</update>
+
+	<insert id="insertFormElement" parameterType="com.asiainfo.ewebframe.ui.form.def.FormElement">
+		insert into
+		TD_UI_TEMPLATE_ELEMENT
+		(
+		TEMPLATE_ID ,
+		ELEMENT_ID ,
+		ELEMENT_CODE ,
+		SHOW_ORDER ,
+		ELEMENT_LABLE ,
+		AREA_CODE ,
+		SHOW_RIGHT ,
+		MODIFY_RIGHT ,
+		FORM_PROPERTY ,
+		VALIATE_EXPR ,
+		ELEMENT_REQUIRED ,
+		INIT_VALUE ,
+		EXTRA_PARAM ,
+		ROW_INDEX ,
+		COL_INDEX ,
+		COL_SPAN
+		)
+		values(
+		#{templateid,jdbcType=VARCHAR},
+		#{elementid,jdbcType=NUMERIC},
+		#{elementcode,jdbcType=NUMERIC},
+		#{order,jdbcType=NUMERIC},
+		#{lable,jdbcType=VARCHAR},
+		#{areacode,jdbcType=VARCHAR},
+		#{showright,jdbcType=VARCHAR},
+		#{modifyright,jdbcType=VARCHAR},
+		#{formproperty,jdbcType=NUMERIC},
+		#{validexpr,jdbcType=VARCHAR},
+		#{required,jdbcType=CHAR},
+		#{initvalue,jdbcType=VARCHAR},
+		#{extraparam,jdbcType=CLOB},
+		#{rowindex,jdbcType=NUMERIC},
+		#{colindex,jdbcType=NUMERIC} ,
+		#{colspan,jdbcType=NUMERIC}
+
+		)
+	</insert>
+
+</mapper>

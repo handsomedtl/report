@@ -1,0 +1,253 @@
+<xsd:schema xmlns="http://127.0.0.1:8080/WSService"
+	targetNamespace="http://127.0.0.1:8080/WSService" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="findMemberRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="pageindex" type="xsd:int" />
+				<xsd:element name="pagesize" type="xsd:int" />
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="findMemberResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="pagesize" type="xsd:int" />
+				<xsd:element name="pagecount" type="xsd:int" />
+				<xsd:element name="totalrowcount" type="xsd:int" />
+				<xsd:element ref="memberinfos" minOccurs="1" maxOccurs="1">
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="memberinfos">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="memberinfo" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="memberinfo">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="username" type="xsd:string" />
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="company" type="xsd:string" />
+				<xsd:element name="provinceid" type="xsd:int" />
+				<xsd:element name="type" type="xsd:int" />
+				<xsd:element name="sex" type="xsd:int" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="findWsSellerByPhoneRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="findWsSellerByPhoneResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="wsseller" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+
+	<xsd:element name="wsseller">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="provincename" type="xsd:string" />
+				<xsd:element name="companyname" type="xsd:string" />
+				<xsd:element name="contact" type="xsd:string" />
+				<xsd:element name="duty" type="xsd:string" />
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="telone" type="xsd:string" />
+				<xsd:element name="teltwo" type="xsd:string" />
+				<xsd:element name="fax" type="xsd:string" />
+				<xsd:element name="email" type="xsd:string" />
+				<xsd:element name="addr" type="xsd:string" />
+				<xsd:element name="siteaddr" type="xsd:string" />
+				<xsd:element name="regtime" type="xsd:string" />
+				<xsd:element name="printtime" type="xsd:string" />
+				<xsd:element name="id" type="xsd:int" />
+				<xsd:element name="outcode" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="findWsMemberByPhoneRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="findWsMemberByPhoneResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="wsmember" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="wsmember">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="provincename" type="xsd:string" />
+				<xsd:element name="company" type="xsd:string" />
+				<xsd:element name="username" type="xsd:string" />
+				<xsd:element name="post" type="xsd:string" />
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="telone" type="xsd:string" />
+				<xsd:element name="teltwo" type="xsd:string" />
+				<xsd:element name="fax" type="xsd:string" />
+				<xsd:element name="email" type="xsd:string" />
+				<xsd:element name="addr" type="xsd:string" />
+				<xsd:element name="siteaddr" type="xsd:string" />
+				<xsd:element name="regtime" type="xsd:string" />
+				<xsd:element name="printtime" type="xsd:string" />
+				<xsd:element name="userid" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="saveWsSellerRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="wssellernew" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="saveWsSellerResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="savestatus" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+
+	<xsd:element name="wssellernew">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="provinceid" type="xsd:int" />
+				<xsd:element name="companyname" type="xsd:string" />
+				<xsd:element name="contact" type="xsd:string" />
+				<xsd:element name="duty" type="xsd:string" />
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="telone" type="xsd:string" />
+				<xsd:element name="teltwo" type="xsd:string" />
+				<xsd:element name="fax" type="xsd:string" />
+				<xsd:element name="email" type="xsd:string" />
+				<xsd:element name="addr" type="xsd:string" />
+				<xsd:element name="postnumber" type="xsd:string" />
+				<xsd:element name="siteaddr" type="xsd:string" />
+				<xsd:element name="regtype" type="xsd:int" />
+				<xsd:element name="type" type="xsd:string" />
+				<xsd:element name="outcode" type="xsd:string" />
+				<xsd:element name="regtime" type="xsd:string" />
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+				<xsd:element name="printtime" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="savestatus">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="status" type="xsd:string" />
+				<xsd:element name="mess" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="saveWsMemberRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="wsmembernew" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="saveWsMemberResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="savestatus" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+
+	<xsd:element name="wsmembernew">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+				<xsd:element name="userid" type="xsd:int" />
+				<xsd:element name="username" type="xsd:string" />
+				<xsd:element name="sex" type="xsd:int" />
+				<xsd:element name="post" type="xsd:string" />
+				<xsd:element name="phone" type="xsd:string" />
+				<xsd:element name="email" type="xsd:string" />
+				<xsd:element name="company" type="xsd:string" />
+				<xsd:element name="provinceid" type="xsd:int" />
+				<xsd:element name="addr" type="xsd:string" />
+				<xsd:element name="siteaddr" type="xsd:string" />
+				<xsd:element name="regtype" type="xsd:int" />
+				<xsd:element name="type" type="xsd:string" />
+				<xsd:element name="outcode" type="xsd:string" />
+				<xsd:element name="regtime" type="xsd:string" />
+				<xsd:element name="printtime" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="updSellerPrintStatusRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+				<xsd:element name="phone" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="updSellerPrintStatusResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="result" type="xsd:boolean" />
+				<xsd:element name="mess" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="updMemberPrintStatusRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="exhibitionid" type="xsd:int" />
+				<xsd:element name="sessionid" type="xsd:int" />
+				<xsd:element name="phone" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="updMemberPrintStatusResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="result" type="xsd:boolean" />
+				<xsd:element name="mess" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+</xsd:schema>

@@ -1,0 +1,26 @@
+<label for="${def.elementcode}"
+	class="control-label <#if def.labelclass??> ${def.labelclass}  <#elseif def.labelspan??> col-md-${def.labelspan} col-sm-4 col-xs-12 <#else> col-md-1 col-sm-4 col-xs-12</#if>">
+	   ${def.lable}<#if def.required =="1"><span class='text-danger'>*</span></#if>
+</label>
+<div class="<#if def.elementclass??> ${def.elementclass}  <#elseif def.elementspan??> col-md-${def.elementspan} col-sm-8 col-xs-12 <#else> col-md-3 col-sm-8 col-xs-12</#if>"
+
+	id="${def.elementcode}_att">
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$('#${def.elementcode}_att').asiainfoFile({
+        name:'${def.elementcode}',
+		id:'#${def.elementcode}_att',
+		element_id:'${(def.elementid)?c}'
+    	<#if def.required =="1"> ,required:true </#if>
+    	<#if value??> ,default_value: '${value}'</#if>
+    	<#if tooltipmess??>
+        , tooltipmess:'${tooltipmess!}'
+        </#if>
+        <#if messcontainer??>
+        , messcontainer:'${messcontainer!}'
+        </#if>
+        ,readonly:true
+	 });
+	});
+ </script>
+</div>

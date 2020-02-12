@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="role">
+	<!-- 获取角色信息 -->
+	<select id="getRoleInfos" resultType="com.asiainfo.eframe.entity.RoleInfo"
+		parameterType="java.util.Map">
+		SELECT A.RIGHT_CODE RIGHTCODE, B.RIGHT_NAME RIGHTNAME
+  			FROM TF_M_STAFFFUNCRIGHT A
+  			LEFT JOIN TD_M_FUNCRIGHT B
+    		ON A.RIGHT_CODE = B.RIGHT_CODE
+    	WHERE 1=1
+		<if test="username != null and username !=''">
+			AND A.STAFF_ID = #{username}
+		</if>
+	</select>
+	
+	<select id="getRoleInfosByUrl" resultType="com.asiainfo.eframe.entity.RoleInfo"
+		parameterType="java.util.Map">
+	SELECT A.RIGHT_CODE RIGHTCODE, A.RIGHT_NAME RIGHTNAME
+	FROM 
+		TD_M_FUNCRIGHT A
+		INNER JOIN TD_S_MODFILE B ON A.MOD_CODE = B.MOD_CODE
+	WHERE 1=1
+		<if test="htmlname != null and htmlname !=''">
+			AND B.MOD_NAME LIKE '%'||#{htmlname}||'%'
+		</if>
+	UNION
+	SELECT T.ROLE_CODE RIGHTCODE, C.RIGHT_NAME RIGHTNAME
+	FROM 
+		TD_S_MODFILE B
+		INNER JOIN TD_M_FUNCRIGHT C ON B.MOD_CODE = C.MOD_CODE
+		INNER JOIN TF_M_ROLEFUNCRIGHT T ON C.RIGHT_CODE = T.RIGHT_CODE
+	WHERE 1=1
+		<if test="htmlname != null and htmlname !=''">
+			AND B.MOD_NAME LIKE '%'||#{htmlname}||'%'
+		</if>
+		
+	</select>
+	
+	<select id="getRoleInfosByUsername" resultType="com.asiainfo.eframe.entity.RoleInfo"
+	parameterType="java.util.Map">
+		SELECT A.RIGHT_CODE RIGHTCODE, A.RIGHT_NAME RIGHTNAME
+		  FROM TD_M_FUNCRIGHT A
+		 INNER JOIN TF_M_STAFFFUNCRIGHT B ON A.RIGHT_CODE = B.RIGHT_CODE
+		 WHERE 1=1
+		 <if test="username != null and username !=''">
+		   AND B.STAFF_ID = #{username}
+		  </if>
+		   AND A.RIGHT_CODE LIKE 'ORG%'
+		UNION
+		SELECT DISTINCT C.RIGHT_CODE RIGHTCODE, C.RIGHT_NAME RIGHTNAME
+		  FROM TF_M_STAFFFUNCRIGHT A
+		 INNER JOIN TF_M_ROLEFUNCRIGHT B ON A.RIGHT_CODE = B.ROLE_CODE
+		 INNER JOIN TD_M_FUNCRIGHT C ON C.RIGHT_CODE = B.RIGHT_CODE
+		 WHERE 1=1
+		 <if test="username != null and username !=''">
+		   AND A.STAFF_ID = #{username}
+		  </if>
+		   AND C.RIGHT_CODE LIKE 'ORG%'
+		
+	</select>
+</mapper>

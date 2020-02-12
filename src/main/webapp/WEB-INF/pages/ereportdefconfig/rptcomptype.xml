@@ -1,0 +1,12 @@
+{
+    "jsonCompType": [
+        {
+            "id": "form",
+            "TYPE": "form"
+        },
+        {
+            "id": "grid",
+            "TYPE": "grid"
+        }
+    ]
+}

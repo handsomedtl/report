@@ -1,0 +1,40 @@
+ <#if form1??>
+
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="search clearfix">
+			<div class="form-up">
+				<a href="javascript:void()"> <i
+					class="fa fa-collapse fa-angle-double-up" collapse="search-form"></i>
+					
+				</a>
+			</div>
+			<div id="search-form" style="display: block;">
+				<form id="form1" class="form-horizontal form-label-left">
+					${form1!}
+				<div class="errormessage">
+</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+</#if>
+
+<!-- grid begin -->
+
+<#if grid1??>
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">${grid1}</div>
+</div>
+</#if>
+
+
+
+<div class="row">
+	<div class="col-md-4 col-sm-6 col-xs-12"><#if charts_bar??> ${charts_bar} </#if></div>
+	<div class="col-md-4 col-sm-6 col-xs-12"><#if charts_pie??> ${charts_pie} </#if></div>
+	<div class="col-md-4 col-sm-12 col-xs-12"><#if charts_line??> ${charts_line} </#if></div>
+</div>
+

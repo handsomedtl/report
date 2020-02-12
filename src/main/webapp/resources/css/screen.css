@@ -1,0 +1,16 @@
+/* -----------------------------------------------------------------------
+
+
+ Blueprint CSS Framework 1.0.1
+ http://blueprintcss.org
+
+   * Copyright (c) 2007-Present. See LICENSE for more info.
+   * See README for instructions on how to use Blueprint.
+   * For credits and origins, see AUTHORS.
+   * This is a compressed file. See the sources in the 'src' directory.
+
+----------------------------------------------------------------------- */
+
+/* reset.css */
+template table {margin-bottom:1.4em;width:100%;}
+template tr, td {padding:4px 10px 4px 5px;}

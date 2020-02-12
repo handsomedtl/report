@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="uigridconf" >
+    <resultMap id="Charts" type="com.asiainfo.echarts.meta.EChartsMeta" >
+	    <id column="ID" property="id" jdbcType="VARCHAR" />
+	    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+	    <result column="CHARTS_TYPE" property="chartsType" jdbcType="VARCHAR" />
+	    <result column="Y_AXIS_NAME" property="yAxisName" jdbcType="VARCHAR" />
+	    <result column="Y_AXIS_UNIT" property="yAxisUnit" jdbcType="VARCHAR" />
+	    <result column="Y_AXIS_MAX" property="yAxisMax" jdbcType="NUMERIC" />
+	    <result column="Y_AXIS_MIN" property="yAxisMin" jdbcType="NUMERIC" />
+	    <result column="DATA_SRC" property="dataSrc" jdbcType="VARCHAR" />
+	    <result column="CATEGORY_FIELDS" property="categoryFields" jdbcType="VARCHAR" />
+	    <result column="DATA_FIELDS" property="dataFields" jdbcType="VARCHAR" />
+	    <result column="SHOW_TOOLBOX" property="showToolbox" jdbcType="BOOLEAN" />
+	    <result column="UPDATE_STAFF" property="updateStaff" jdbcType="VARCHAR" />
+	    <result column="UPDATE_DEPART" property="updateDepart" jdbcType="VARCHAR" />
+	    <result column="UPDATE_DATE" property="updateDate" jdbcType="DATE" />
+    </resultMap>
+
+	<select id="oneEChartsMeta" parameterType="java.lang.String" resultMap="Charts">
+		select 
+				t.*
+		     from td_ui_charts t 
+		where id=#{_parameter}
+	</select>
+</mapper>

@@ -1,0 +1,333 @@
+<#macro gridheader heads>
+ <#list heads as headrow>
+    [
+        <#list headrow as head> 
+        
+        {
+            title: '${head.title}'
+            <#if head.colmeta??>
+               <#if head.colmeta.field??>
+                ,field: '${head.colmeta.field}'
+               </#if>
+               <#if head.colmeta.align??>
+                ,align: '${head.colmeta.align}'
+               </#if>
+               ,halign: 'center'
+               <#if head.colmeta.width??>
+                ,width: '${head.colmeta.width}'
+               </#if>
+               <#if head.colmeta.formatter?? || head.colmeta.footerFormatter?? >
+                ,formatter:  function(value,row,index){
+                	<#if head.colmeta.footerFormatter??>
+                		if(isFooter(row)){
+                		return customformater_${gridMeta.id}('${head.colmeta.field}',${head.colmeta.getWrap("footerFormatter")},value,row,index)  ;
+                		}
+                	</#if>
+                	<#if head.colmeta.formatter??>
+                       var formatResult= customformater_${gridMeta.id}('${head.colmeta.field}',${head.colmeta.getWrap("formatter")},value,row,index)  ;
+                        <#if head.colmeta.href??>
+                          return '<a href="'+${head.colmeta.href}+'">'+formatResult+'</a>';
+                        <#else>
+                         return  formatResult;
+                        </#if> 
+                    <#else>
+                      <#if head.colmeta.href??>
+                          return '<a href="'+${head.colmeta.href}+'">'+value+'</a>';
+                        <#else>
+                         return  value;
+                        </#if> 
+                    </#if>
+                }
+               </#if>
+               <#if head.colmeta.cellStyle?? || head.colmeta.footerStyle?? >
+                ,styler:  function(value,row,index){
+                  <#if head.colmeta.footerStyle??>
+                   if(isFooter(row)){
+                       return datagridCellStyle(${head.colmeta.getWrap("footerStyle")},value,row,index)  ; 
+                     
+                   }
+                   </#if>
+
+                    <#if head.colmeta.cellStyle??>
+                       return datagridCellStyle(${head.colmeta.getWrap("cellStyle")},value,row,index)  ; 
+                    </#if>
+
+                }
+               </#if>
+               <#if head.colmeta.resizable??>
+                ,resizable: ${head.colmeta.resizable}
+               </#if>
+            </#if>
+             <#if head.rowspan??>
+                ,rowspan: ${head.rowspan}
+             </#if>
+             <#if head.colspan??>
+                ,colspan: ${head.colspan}
+             </#if>
+        }<#if head?has_next >, </#if>
+        
+        
+        </#list>
+    ]<#if headrow?has_next >, </#if>
+     </#list>
+</#macro>
+
+
+<#macro formatter>
+function isFooter(row){
+   if(row._footer){
+     return true;
+   }
+   
+   return false;
+}
+var customformater_${gridMeta.id} =function ( fieldname, format ,value,row,index){
+  var colmetadata= $('#dg${gridMeta.id}').datagrid('options').colmetadata;
+  if(colmetadata!=null){
+       var datatype=colmetadata[fieldname].typeName;
+       return datagridCellFormat(datatype,format,value,row,index);
+       /*if(datatype=='number'){
+    	   var df = new DecimalFormat(format);
+            return df.format(value);       
+          }else if(datatype=='date' && value){
+        	 var date = new Date(value);
+            return date.format(format);
+          }else{
+           return  value ;
+          }*/
+  }        
+       return  value ;       
+       
+       
+}
+</#macro>
+
+
+<#macro toolbar meta>
+	<#if meta.hasToolbar >
+	<div id="tb" style="padding:2px 5px;">
+		<script type="text/javascript">
+			function download_${meta.id}(){
+			  window.open('${gridMeta.expurl}'+"?"+ encodeURI($(document.forms[0]).serialize()));
+			}
+
+			
+			function collapse_${meta.id}(){
+				$('#dg${meta.id}').datagrid({title:'${meta.name}',collapsible:true,'onExpand':function(){
+					$('#dg${meta.id}').datagrid({title:'',collapsible:true});
+				}});
+				$('#dg${meta.id}').datagrid('getPanel').panel('collapse');
+
+			}
+			
+			var groupmenu${meta.id};
+			var groupfield${meta.id};
+			function createGroupMenu${meta.id}(){
+				groupmenu${meta.id} = $('#groupMenu${meta.id}');
+				groupmenu${meta.id}.menu({
+		               onClick: function(item){
+		                   if (item.iconCls == 'icon-ok'){
+		                       
+		                       groupmenu${meta.id}.menu('setIcon', {
+		                           target: item.target,
+		                           iconCls: 'icon-empty'
+		                       });
+		                       $('#dg${meta.id}').datagrid({"groupField":'',view:$.fn.datagrid.defaults.view});
+		                   } else {
+		                      
+		                	   if(groupfield${meta.id}){
+		                		   groupmenu${meta.id}.menu('setIcon', {
+			                           target: groupfield${meta.id},
+			                           iconCls: 'icon-empty'
+			                       });
+		                	   }
+		                       groupmenu${meta.id}.menu('setIcon', {
+		                           target: item.target,
+		                           iconCls: 'icon-ok'
+		                       });
+		                       $('#dg${meta.id}').datagrid({"view":groupview,"groupField":item.name,"groupFormatter":function(value,rows){
+		                           return value + ' - ' + rows.length + ' 行数据';
+		                       }});
+		                       groupfield${meta.id}=item.target;
+		                   }
+		               }
+		           });
+		           var fields = $('#dg${meta.id}').datagrid('getColumnFields');
+		           for(var i=0; i < fields.length; i++){
+		               var field = fields[i];
+		               var col = $('#dg${meta.id}').datagrid('getColumnOption', field);
+		               groupmenu${meta.id}.menu('appendItem', {
+		                   text: col.title,
+		                   name: field,
+		                   iconCls: 'icon-empty'
+		               });
+		           }
+		       }
+			
+			function grouping_${meta.id}(e){
+			  if('${meta.type}'==2){
+               BDialog.alert("树形报表不支持分组 。");
+	       	   return;
+              }
+				e.preventDefault();
+                if (!groupmenu${meta.id}){
+                	createGroupMenu${meta.id}();
+                }
+                groupmenu${meta.id}.menu('show', {
+                    left:e.pageX,
+                    top:e.pageY
+                });
+            }
+            
+  var dofilter_${meta.id} = function() {
+    if('${meta.type}'==2){
+        BDialog.alert("树形报表不支持过滤数据 。");
+		return;
+    }
+    var filterenable=$('#dg${gridMeta.id}').datagrid('options').filterenable;
+    var colmetas=$('#dg${gridMeta.id}').datagrid('options').colmetadata;
+    var colfilterconfig= $('#dg${gridMeta.id}').datagrid('options').colfilterconfig;
+	if (colmetas == null||$('#dg${meta.id}').datagrid('getData')==0 ) {
+		BDialog.alert("没有可过滤数据，请执行查询再试。");
+		return;
+	}
+	colfilterconfigs = new Array();
+	var index = 0;
+	var fields = $('#dg${meta.id}').datagrid('getColumnFields');
+	for (var i = 0; i < fields.length; i++) {
+		var field = fields[i];
+		if (field in colmetas) {
+			var colfilterconfig = new Array();
+			colfilterconfig['field'] = field;
+			if (colmetas[field].typeName == 'number') {
+				colfilterconfig['type'] = 'numberbox';
+				colfilterconfig['op'] = [ 'equal', 'notequal', 'less',
+						'greater' ];
+				colfilterconfigs[index] = colfilterconfig;
+				index++;
+			} else if (colmetas[field].typeName == 'date') {
+				colfilterconfig['type'] = 'numberbox';
+				colfilterconfig['op'] = [ 'equal', 'less', 'greater' ];
+				colfilterconfigs[index] = colfilterconfig;
+				index++;
+			}
+		}
+	}
+	
+	if (filterenable) {
+		disableFilter_${meta.id}();
+		return;
+	}
+	$('#dg${gridMeta.id}').datagrid('options').colfilterconfigs=colfilterconfigs;
+	$('#dg${meta.id}').datagrid('enableFilter', colfilterconfigs);
+	$('#dg${gridMeta.id}').datagrid('options').filterenable=true;
+
+};
+
+var disableFilter_${meta.id} = function() {
+	try {
+	   var colfilterconfigs=$('#dg${gridMeta.id}').datagrid('options').colfilterconfigs;
+	   var filterenable=$('#dg${gridMeta.id}').datagrid('options').filterenable;
+		if (colfilterconfigs != null && colfilterconfigs != undefined
+				&& filterenable) {
+			//$('#dg${meta.id}').datagrid('disableFilter', colfilterconfigs);
+			$('#dg${meta.id}').datagrid('removeFilterRule');
+			$('#dg${meta.id}').datagrid('destroyFilter');
+			
+		}
+
+	} catch (ex) {
+		alert(ex);
+	}
+	$('#dg${gridMeta.id}').datagrid('options').filterenable = false;
+}
+
+
+		</script>
+		
+		<#if meta.isHasFunciton('export') >
+		<a href="javascript:download_${meta.id}();void(0);" title="导出">
+			<span class="l-btn-left l-btn-icon-left" id="export">
+			<i class="fa fa-save menu-ico" style="font-size:16px" > </i>导出</span>
+		</a>
+		</#if>
+		<#if meta.isHasFunciton('print') >
+		<a href="javascript:alert('print');void(0);" title="打印">
+			<span class="l-btn-left l-btn-icon-left" id="print">
+			<i class="fa fa-print menu-ico"  style="font-size:16px" > </i>打印</span>
+		</a>
+		</#if>
+		
+		<#if meta.isHasFunciton('filter') >
+		<a href="javascript:dofilter_${meta.id}();void(0);" title="筛选">
+			<span class="l-btn-left l-btn-icon-left" id="filter">
+			<i class="fa fa-filter menu-ico"  style="font-size:16px" > </i>筛选</span>
+			
+		</a>
+		</#if>
+		<#if meta.isHasFunciton('grouping') >
+		<a href="#"  onclick="grouping_${meta.id}(event);return false;" title="分组">
+			<span class="l-btn-left l-btn-icon-left" id="grouping">
+			<i class="fa fa-group menu-ico"  style="font-size:16px" onclick=grouping > </i>分组<div id="groupMenu${meta.id}"></div></span>
+		</a>
+		</#if>
+		<#if meta.isHasFunciton('analyse') >
+		<a href="javascript:alert('analyse');void(0);" title="分析">
+			<span class="l-btn-left l-btn-icon-left" id="analyse">
+			<i class="fa fa-bar-chart menu-ico"  style="font-size:16px"> </i>分析</span>
+		</a>
+		</#if>
+		
+		
+    </div>
+    
+    </#if>
+</#macro>
+
+<#macro columnContextMenu meta>
+
+var cmenu${meta.id};
+function handleColumnMenu_${meta.id}(e, field){
+                   e.preventDefault();
+                   if (!cmenu${meta.id}){
+                       createColumnMenu${meta.id}();
+                   }
+                   cmenu${meta.id}.menu('show', {
+                       left:e.pageX,
+                       top:e.pageY
+                   });
+               }
+ 
+    
+       function createColumnMenu${meta.id}(){
+           cmenu${meta.id} = $('<div/>').appendTo('body');
+           cmenu${meta.id}.menu({
+               onClick: function(item){
+                   if (item.iconCls == 'icon-ok'){
+                       $('#dg${meta.id}').datagrid('hideColumn', item.name);
+                       cmenu${meta.id}.menu('setIcon', {
+                           target: item.target,
+                           iconCls: 'icon-empty'
+                       });
+                   } else {
+                       $('#dg${meta.id}').datagrid('showColumn', item.name);
+                       cmenu${meta.id}.menu('setIcon', {
+                           target: item.target,
+                           iconCls: 'icon-ok'
+                       });
+                   }
+               }
+           });
+           var fields = $('#dg${meta.id}').datagrid('getColumnFields');
+           for(var i=0; i < fields.length; i++){
+               var field = fields[i];
+               var col = $('#dg${meta.id}').datagrid('getColumnOption', field);
+               cmenu${meta.id}.menu('appendItem', {
+                   text: col.title,
+                   name: field,
+                   iconCls: 'icon-ok'
+               });
+           }
+       }
+
+</#macro>

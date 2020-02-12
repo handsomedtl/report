@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="reportdesc">
+	<resultMap id="CustRptDesc" type="com.asiainfo.ereport.meta.ReportDesc">
+		<id column="category" property="category" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="content" property="sql" jdbcType="VARCHAR" />
+		<result column="resource_type" property="restype" jdbcType="VARCHAR" />
+		<result column="data_route" property="dataroute" jdbcType="VARCHAR" />
+	</resultMap>
+    <select id="SelReportDesc" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+        SELECT a.NAME reportname,
+           a.id reportid,
+           d.id datasetid,
+           c.comp_id gridid,
+           b.comp_id templid
+	      FROM td_rpt_report           a,
+	           td_rpt_report_component b,
+	           td_rpt_report_component c,
+	           td_rpt_dataset d
+	     WHERE  b.report_id=a.id(+) 
+	       AND  c.report_id=b.report_id(+)
+	       AND (lower(b.TYPE) = 'form' OR b.TYPE IS NULL)
+	       AND (lower(c.TYPE) = 'grid' OR c.TYPE IS NULL)
+	       AND d.id=c.dataset_id(+)
+	      <if test="rptname != null and rptname != ''">
+		       AND a.name like '%'||#{rptname}||'%'
+		  </if>
+    </select>
+    <select id="SelReportCompDesc" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+          SELECT 
+				REPORT_ID reportid,
+				TYPE type,
+				COMP_ID compid,
+				DATASET_ID datasetid,
+				DISPLAY_ORDER displayorder,
+				LAYOUT_VAR layoutvar
+		  FROM td_rpt_report_component
+		 WHERE 1=1
+		 <if test="reportid != null and reportid != ''">
+	       AND report_id =#{reportid}
+	     </if>
+    </select>
+    <select id="SelDisplayDataset" parameterType="java.util.Map"
+		resultMap="CustRptDesc">
+          SELECT 
+				category,
+				type,
+				name,
+				content,
+				nvl(resource_type,'1') resource_type,
+				nvl(data_route,'1') data_route
+		  FROM td_rpt_dataset
+		 WHERE 1=1
+		 <if test="datasetid != null and datasetid != ''">
+	       AND id =#{datasetid}
+	     </if>
+    </select>
+</mapper>

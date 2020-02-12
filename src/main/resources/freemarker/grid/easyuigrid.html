@@ -1,0 +1,80 @@
+<#import "gridlib.html" as grid>
+
+<table id="dg${gridMeta.id}"<#if gridMeta.gridCss??>
+	style="${gridMeta.gridCss}" </#if> > <@grid.toolbar meta=gridMeta />
+
+
+</table>
+<script type="text/javascript">
+ // 表格全局脚本 
+ <#if gridMeta.extScript??>
+    ${gridMeta.extScript}
+ </#if>
+<@grid.columnContextMenu meta=gridMeta />
+
+var dg${gridMeta.id};
+dg${gridMeta.id}= $('#dg${gridMeta.id}').datagrid({
+    url:'',
+    <#if gridMeta.hasToolbar>
+    toolbar:"#tb",
+    </#if>
+    loadMsg : '数据加载中...',
+    sortOrder : 'asc',
+    singleSelect : true,
+    fit : false,
+    width:'100%',
+    height:'auto',
+    showFooter : true,
+    openAnimation:'slide',
+    columns: [
+              <@grid.gridheader heads=gridMeta.heads />
+    
+ ]
+ <#if gridMeta.frozenheads??&&gridMeta.frozenheads?size gt 0>
+ ,
+ frozenColumns: [
+                 <@grid.gridheader heads=gridMeta.frozenheads />
+     
+ ]
+ </#if>
+ ,autoRowHeight:true
+ ,striped:true
+ ,rownumbers:true
+  <#if gridMeta.paging=true>
+  ,pagination:${gridMeta.paging?c} 
+  ,pageSize:10
+  ,pageList:[10,30,50,70,100],
+  remoteFilter:false
+  </#if>
+ ,
+  onHeaderContextMenu:handleColumnMenu_${gridMeta.id},
+  onLoadError:function(data){
+    BDialog.alert(data.responseText)
+  }
+  ,loadFilter:function(data){
+   $('#dg${gridMeta.id}').datagrid('options').colmetadata=data.colmeta;
+   return data;
+ },
+  onBeforeLoad:function(){
+  disableFilter_${gridMeta.id}();
+  return true;
+ }
+,
+ onLoadSuccess : function(data) {
+	  $("#dg${gridMeta.id}").datagrid("clearSelections");
+	}
+});
+		
+<@grid.formatter />
+  
+  $(document).on('refreshComponent',function(event,param){
+       disableFilter_${gridMeta.id}();
+	   $('#dg${gridMeta.id}').datagrid({
+	        url:'${gridMeta.dataSrc}',
+			queryParams: param,
+			pageNumber:1
+		});
+
+    });
+ 
+</script>

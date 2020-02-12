@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.ewebframe.ui.form.def.FormDef">
+	<resultMap id="BaseResultMap" type="com.asiainfo.ewebframe.ui.form.def.FormDef">
+		<id column="TEMPLATE_ID" property="templateId" jdbcType="VARCHAR" />
+		<result column="TEMPLATE_TYPE" property="templateType"
+			jdbcType="CHAR" />
+		<result column="VERSION_NUM" property="versionNum" jdbcType="DECIMAL" />
+		<result column="VALID_FLAG" property="validFlag" jdbcType="DECIMAL" />
+		<result column="UPDATE_STAFF" property="updateStaff" jdbcType="VARCHAR" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="DATE" />
+		<result column="EDIT_TEMPLATE" property="editTemplate"
+			jdbcType="CLOB" />
+		<result column="VIEW_TEMPLATE" property="viewTemplate"
+			jdbcType="CLOB" />
+		<result column="TEMPLATE_PARAM" property="templateParam"
+			jdbcType="CLOB" />
+		<result column="TEMPLATE_MODEL" property="templateModel"
+			jdbcType="CLOB" />
+		<result column="BIZ_LOGIC" property="bizLogic" jdbcType="CLOB" />
+		<result column="SUMMARY_TEMPLATE" property="summaryTemplate"
+			jdbcType="CLOB" />
+		<result column="TEMPLATE_NAME" property="templateName"
+			jdbcType="VARCHAR" />
+		<result column="TEMPLATE_CATEGORY" property="templateCategory"
+			jdbcType="VARCHAR" />
+		<result column="KEY_FIELDS" property="keyfields" jdbcType="VARCHAR" />
+		<result column="FORM_TYPE" property="formtype" />
+	</resultMap>
+	<select id="oneFormDef" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * from TD_UI_TEMPLATE t where t.TEMPLATE_ID = #{_parameter}
+	</select>
+	<select id="getFormDefs" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		select * from TD_UI_TEMPLATE t where t.TEMPLATE_TYPE = '2' and t.VALID_FLAG
+		= 1 and t.TEMPLATE_CATEGORY = #{templateCategory}
+	</select>
+	<insert id="insertFormDef" parameterType="com.asiainfo.ewebframe.ui.form.def.FormDef">
+		insert into TD_UI_TEMPLATE (TEMPLATE_ID, TEMPLATE_TYPE, VERSION_NUM,
+		VALID_FLAG, UPDATE_STAFF, UPDATE_TIME,
+		EDIT_TEMPLATE, VIEW_TEMPLATE, TEMPLATE_PARAM,
+		TEMPLATE_MODEL, BIZ_LOGIC,SUMMARY_TEMPLATE,KEY_FIELDS)
+		values (#{templateId,jdbcType=VARCHAR}, #{templateType,jdbcType=CHAR},
+		#{versionNum,jdbcType=DECIMAL},
+		#{validFlag,jdbcType=DECIMAL}, #{updateStaff,jdbcType=VARCHAR}, #{updateTime,jdbcType=DATE},
+		#{editTemplate,jdbcType=CLOB}, #{viewTemplate,jdbcType=CLOB},
+		#{templateParam,jdbcType=CLOB},
+		#{templateModel,jdbcType=CLOB}, #{bizLogic,jdbcType=CLOB},
+		#{summaryTemplate,jdbcType=CLOB},#{keyfields,jdbcType=VARCHAR})
+	</insert>
+	<select id="existsFormDef" parameterType="com.asiainfo.ewebframe.ui.form.def.FormDef"
+		resultMap="BaseResultMap">
+		SELECT
+		t.*
+		FROM TD_UI_TEMPLATE t
+		WHERE
+		t.TEMPLATE_ID=#{templateId}
+	</select>
+	<insert id="updateFormDef" parameterType="com.asiainfo.ewebframe.ui.form.def.FormDef">
+		update TD_UI_TEMPLATE t
+		<set>
+			<if test="templateName !=null and templateName !='' ">
+				t.template_Name = #{templateName},
+			</if>
+			<if test="templateCategory !=null and templateCategory !='' ">
+				t.TEMPLATE_CATEGORY = #{templateCategory},
+			</if>
+			<if test="keyfields !=null and keyfields !='' ">
+				t.KEY_FIELDS = #{keyfields},
+			</if>
+			<if test="formtype !=null and formtype !='' ">
+				t.FORM_TYPE = #{formtype},
+			</if>
+			<if test="templateId !=null and templateId !='' ">
+				t.TEMPLATE_ID = #{templateId},
+			</if>
+		</set>
+		where t.TEMPLATE_ID=#{templateId}
+	</insert>
+
+</mapper>

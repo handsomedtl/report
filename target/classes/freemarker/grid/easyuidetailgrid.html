@@ -1,0 +1,210 @@
+<table id="dg${gridMeta.id}"  <#if gridMeta.width??> width="${gridMeta.width?c}px" </#if> <#if gridMeta.height??> height="${gridMeta.height?c}px" </#if>
+ <#if gridMeta.gridCss??> style="${gridMeta.gridCss}px" </#if> >
+</table>
+<script type="text/javascript">
+var colmetadata=null;
+$('#dg${gridMeta.id}').datagrid({
+   // url:'${gridMeta.dataSrc}',
+    title:'${gridMeta.name}',
+    url:'datagrid_data.jhtml',
+    loadMsg : '数据加载中...',
+    sortOrder : 'asc',
+    singleSelect : true,
+    fit : true,
+    showFooter : true,
+    openAnimation:'slide',
+    columns: [
+     <#list gridMeta.heads as headrow>
+    [
+        <#list headrow as head> 
+        <#if head?has_next >
+        {
+            title: '${head.title}'
+            <#if head.colmeta??>
+               <#if head.colmeta.field??>
+                ,field: '${head.colmeta.field}'
+               </#if>
+               <#if head.colmeta.align??>
+                ,align: '${head.colmeta.align}'
+               </#if>
+               <#if head.colmeta.width??>
+                ,width: '${head.colmeta.width}'
+               </#if>
+               <#if head.colmeta.formatter??>
+                ,formatter: function(value,row,index){
+                   return customformater('${head.colmeta.field}',value)  ; 
+                }
+               </#if>
+               <#if head.colmeta.resizable??>
+                ,resizable: ${head.colmeta.resizable}
+               </#if>
+            </#if>
+             <#if head.rowspan??>
+                ,rowspan: ${head.rowspan}
+             </#if>
+             <#if head.colspan??>
+                ,colspan: ${head.colspan}
+             </#if>
+        },
+        <#else>
+        {
+            title: '${head.title}'
+            <#if head.colmeta??>
+               <#if head.colmeta.field??>
+                ,field: '${head.colmeta.field}'
+               </#if>
+               <#if head.colmeta.align??>
+                ,align: '${head.colmeta.align}'
+               </#if>
+               <#if head.colmeta.width??>
+                ,width: '${head.colmeta.width}'
+               </#if>
+               <#if head.colmeta.formatter??>
+                ,formatter: function(value,row,index){
+                   return customformater('${head.colmeta.field}',value)  ; 
+                }
+               </#if>
+               <#if head.colmeta.resizable??>
+                ,resizable: ${head.colmeta.resizable}
+               </#if>
+            </#if>
+             <#if head.rowspan??>
+                ,rowspan: ${head.rowspan}
+             </#if>
+             <#if head.colspan??>
+                ,colspan: ${head.colspan}
+             </#if>
+        }
+        
+        </#if>
+        
+        </#list>
+    ]
+     </#list>
+ ]
+ <#if gridMeta.frozenheads??&&gridMeta.frozenheads?size>0>
+ ,
+ frozenColumns: [
+     <#list gridMeta.frozenheads as headrow>
+    [
+        <#list headrow as head> 
+        <#if head?has_next >
+        {
+            title: '${head.title}'
+            <#if head.colmeta??>
+               <#if head.colmeta.field??>
+                ,field: '${head.colmeta.field}'
+               </#if>
+               <#if head.colmeta.align??>
+                ,align: '${head.colmeta.align}'
+               </#if>
+               <#if head.colmeta.width??>
+                ,width: '${head.colmeta.width}'
+               </#if>
+               <#if head.colmeta.formatter??>
+                ,formatter:function(value,row,index){
+                  return customformater('${head.colmeta.field}',value)  ; 
+                } 
+               </#if>
+               <#if head.colmeta.resizable??>
+                ,resizable: ${head.colmeta.resizable}
+               </#if>
+            </#if>
+             <#if head.rowspan??>
+                ,rowspan: ${head.rowspan}
+             </#if>
+             <#if head.colspan??>
+                ,colspan: ${head.colspan}
+             </#if>
+        },
+        <#else>
+        {
+            title: '${head.title}'
+            <#if head.colmeta??>
+               <#if head.colmeta.field??>
+                ,field: '${head.colmeta.field}'
+               </#if>
+               <#if head.colmeta.align??>
+                ,align: '${head.colmeta.align}'
+               </#if>
+               <#if head.colmeta.width??>
+                ,width: '${head.colmeta.width}'
+               </#if>
+               <#if head.colmeta.formatter??>
+                ,formatter:function(value,row,index){
+                    return customformater('${head.colmeta.field}',value)  ; 
+                } 
+               </#if>
+               <#if head.colmeta.resizable??>
+                ,resizable: ${head.colmeta.resizable}
+               </#if>
+            </#if>
+             <#if head.rowspan??>
+                ,rowspan: ${head.rowspan}
+             </#if>
+             <#if head.colspan??>
+                ,colspan: ${head.colspan}
+             </#if>
+        }
+        
+        </#if>
+        
+        </#list>
+    ]
+     </#list>
+ ]
+ </#if>
+ ,autoRowHeight:true
+ ,striped:true
+ ,rownumbers:true
+  <#if gridMeta.paging=true>
+  ,pagination:${gridMeta.paging?c} 
+  ,pageSize:10
+  ,pageList:[10,30,50,70,100]
+  </#if>
+ ,queryParams:function(){
+    return {
+		name: 'easyui',
+		subject: 'datagrid'
+	};
+ },
+ toolbar: [{
+		iconCls: 'icon-save',
+		handler: function(){alert('filesave')}
+	},'-',{
+		iconCls: 'icon-print',
+		handler: function(){alert('print')}
+	}],
+ onLoadSuccess : function(data) {
+      colmetadata=data.colmeta;
+	  $("#dg${gridMeta.id}").datagrid("clearSelections");
+	}
+});
+$('#dg${gridMeta.id}').datagrid('getPager').pagination({
+		beforePageText : '',
+		afterPageText : '/{pages}',
+		displayMsg : '{from}-{to}共{total}条',
+		showPageList : true,
+		showRefresh : true
+	});
+	$('#dg${gridMeta.id}').datagrid('getPager').pagination({
+		onBeforeRefresh : function(pageNumber, pageSize) {
+			$(this).pagination('loading');
+			$(this).pagination('loaded');
+		}
+	});
+ var customformater =function ( fieldname, value){
+  if(colmetadata!=null){
+        var datatype=colmetadata[head.colmeta.field];
+       if(datatype=='long'||datatype=='double'){
+            return 'long';       
+          }else if(datatype=='date'){
+            return 'date';                       
+          }else{
+           return  value ;
+          }
+         }else{        
+           return  value ;       
+       }
+}
+</script>

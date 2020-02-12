@@ -1,0 +1,10 @@
+
+<div ng-controller="KisBpmSelectPropertyCtrl">
+  <select id="userField" class="form-control" 
+          ng-model="property.value" 
+          ng-options="template.templateId as template.templateName for template in templates"
+          ng-blur="inputBlurred()"
+          ng-keypress="enterPressed($event)">
+        <!--  <option ng-repeat="value in groups" ng-value="value.groupid">{{value.groupname}}</option> -->  
+  </select>
+</div>

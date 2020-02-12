@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="user">
+	<!-- 获取用户信息 -->
+	<select id="oneUserInfo" resultType="com.asiainfo.eframe.entity.UserInfo"
+		parameterType="java.util.Map">
+		SELECT A.STAFF_ID STAFFID,
+		B.STAFF_PASSWD STAFFPASSWD,
+		A.STAFF_NAME STAFFNAME,
+		A.DEPART_ID DEPARTID,
+		C.DEPART_NAME DEPARTNAME,
+		E.AREA_CODE AREACODE,
+   		E.AREA_NAME AREANAME,
+		A.EPARCHY_CODE EPARCHYCODE,
+		G.GROUPID,
+		G.GROUPNAME
+
+		FROM 
+			TD_M_STAFF A
+		INNER JOIN TF_M_STAFFPASSWD B ON A.STAFF_ID = B.STAFF_ID
+		INNER JOIN TD_M_DEPART C ON A.DEPART_ID = C.DEPART_ID
+		INNER JOIN TD_M_AREA E ON E.AREA_CODE = A.CITY_CODE
+    	LEFT JOIN (SELECT E.DATA_ID GROUPID, E.DATA_NAME GROUPNAME, F.STAFF_ID FROM TD_S_STATIC E
+			INNER JOIN TF_H_APPROVE_STAFF F ON E.DATA_ID = F.APPROVE_STAFF_TYPE
+			WHERE 
+				E.TYPE_ID = 'APPROVE_STAFF_TYPE'
+			<if test="username != null and username !=''">
+				AND F.STAFF_ID = #{username}
+			</if>
+			) G  ON A.STAFF_ID = G.STAFF_ID
+		WHERE 1=1
+		<if test="username != null and username !=''">
+			AND A.STAFF_ID = #{username}
+		</if>
+	</select>
+	
+	<select id="getDepartApproveStaff" resultType="java.util.Map" parameterType="java.util.Map">
+	SELECT B.STAFF_ID
+	FROM 
+		TF_H_APPROVE_STAFF B
+		INNER JOIN TD_M_STAFF T  ON B.STAFF_ID = T.STAFF_ID AND B.DEPART_ID = T.DEPART_ID
+		INNER JOIN TD_M_STAFF T1 ON T.DEPART_ID = T1.DEPART_ID
+	WHERE 1 = 1
+	<if test="username != null and username !=''">
+		AND T1.STAFF_ID = #{username}
+	</if>
+	<if test="approvestafftype != null and approvestafftype !=''">
+		AND B.APPROVE_STAFF_TYPE = #{approvestafftype}
+	</if>
+	</select>
+	
+	
+	<select id="getDepartKindApproveStaff" resultType="java.util.Map" parameterType="java.util.Map">
+	SELECT B.STAFF_ID
+	FROM 
+		TF_H_APPROVE_STAFF B
+		INNER JOIN TD_M_STAFF T ON B.EPARCHY_CODE = T.EPARCHY_CODE
+		INNER JOIN TD_M_DEPART C ON T.DEPART_ID = C.DEPART_ID
+	WHERE 1 = 1
+	<if test="username != null and username !=''">
+		AND T.STAFF_ID = #{username}
+	</if>
+	<if test="approvestafftype != null and approvestafftype !=''">
+		AND B.APPROVE_STAFF_TYPE = #{approvestafftype}
+	</if>
+	AND B.ORGANIZATION_TYPE LIKE '%' || C.DEPART_KIND_CODE || '%'
+	</select>
+	
+	
+	<select id="getAreaApproveStaff" resultType="java.util.Map" parameterType="java.util.Map">
+	SELECT B.STAFF_ID
+	FROM 
+		TF_H_APPROVE_STAFF B
+		INNER JOIN TD_M_STAFF T ON B.AREA_CODE = T.CITY_CODE
+	WHERE 1 = 1
+	<if test="username != null and username !=''">
+		AND T.STAFF_ID = #{username}
+	</if>
+	<if test="approvestafftype != null and approvestafftype !=''">
+		AND B.APPROVE_STAFF_TYPE = #{approvestafftype}
+	</if>
+	</select>
+	
+	<select id="getFinanceApproveStaff" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT B.STAFF_ID
+		FROM 
+			TF_H_APPROVE_STAFF B
+			INNER JOIN TD_M_STAFF T ON B.EPARCHY_CODE = T.EPARCHY_CODE
+		WHERE 1 = 1
+		<if test="username != null and username !=''">
+			AND T.STAFF_ID = #{username}
+		</if>
+		<if test="approvestafftype != null and approvestafftype !=''">
+			AND B.APPROVE_STAFF_TYPE = #{approvestafftype}
+		</if>
+	</select>
+	
+	<select id="selectSameNameStaffid" resultType="String"  parameterType="map" >
+		select staff_id from td_m_staff where STAFF_NAME=#{staffName}
+		<if test="eparchyCode !=null">
+			and eparchy_code = #{eparchyCode}
+		</if>
+		<if test="cityCode !=null">
+			and city_code = #{cityCode}
+		</if>
+	</select>
+</mapper>

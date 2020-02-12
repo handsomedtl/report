@@ -1,0 +1,35 @@
+<#list elements as el> 
+	<#if el.allowWrap == false>
+		<#if view>
+			${el.renderView(renderParams)}
+		 <#else>
+			${el.render(renderParams)}
+		 </#if>
+	<#else>
+		<#switch el.formElement.colspan> 
+			<#case 1> 
+			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+				<div class="form-group">
+	
+				<#break> 
+			<#case 2> 
+				<div class="col-lg-6 col-md-8 col-sm-6 col-xs-12">
+					<div class="form-group">
+				<#break> 
+			<#case 3> 
+				<div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+	                                <div class="form-group  col-lg4-md3">
+				<#break> 
+			<#default> 
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+	                                <div class="form-group  col-lg4-md3">
+		</#switch>
+		 <#if view>
+			${el.renderView(renderParams)}
+		 <#else>
+			${el.render(renderParams)}
+		 </#if>
+			</div>
+		</div>
+	</#if>
+</#list>

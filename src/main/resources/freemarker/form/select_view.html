@@ -1,0 +1,29 @@
+<label for="${def.elementcode}"
+	class="control-label <#if def.labelclass??> ${def.labelclass}  <#elseif def.labelspan??> col-md-${def.labelspan} col-sm-4 col-xs-12 <#else> col-md-1 col-sm-4 col-xs-12</#if>">
+	${def.lable}<#if def.required =="1"><span class='text-danger'>*</span></#if>
+</label>
+<div class="<#if def.elementclass??> ${def.elementclass}  <#elseif def.elementspan??> col-md-${def.elementspan} col-sm-8 col-xs-12 <#else> col-md-3 col-sm-8 col-xs-12</#if>"
+  id="${def.elementcode}_select">
+  <select id="${def.elementcode}" name="${def.elementcode}" <#if def.required =="1"> required="required" </#if> class="form-control col-md-12 col-xs-12" >
+  </select>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#${def.elementcode}').asiainfoSelect({
+				id : '#${def.elementcode}',
+				element_id : '${(def.elementid)?c}',
+				listeners : ${listeners},
+				filterfields: ${filterfields},
+				filtervals:${filtervals}
+				<#if default_value??>
+				 , default_value:'${default_value}'
+				</#if> 
+				 <#if tooltipmess??>
+	              , tooltipmess:'${tooltipmess!}'
+	             </#if>
+	             <#if messcontainer??>
+	              , messcontainer:'${messcontainer!}'
+	             </#if>
+				});
+			});
+	</script>
+</div>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="reportdef">
+	<resultMap id="reportMeta" type="com.asiainfo.ereport.meta.ReportMeta">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" />
+		<result column="RIGHT_CODE" property="rightCode" jdbcType="VARCHAR" />
+		<result column="LAYOUT_ID" property="layoutId" jdbcType="VARCHAR" />
+		<result column="LAYOUT_CONTENT" property="layoutContent"
+			jdbcType="CLOB" />
+		<result column="HELP_CONTENT" property="helpContent" jdbcType="VARCHAR" />
+		<result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="NUMERIC" />
+		<result column="UPDATE_STAFF" property="updateStaff" jdbcType="VARCHAR" />
+		<result column="UPDATE_DEPART" property="updateDepart"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="DATE" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CONFIG" property="config" jdbcType="CLOB" />
+		<result column="CREATE_STAFF" property="createStaff" jdbcType="VARCHAR" />
+		<result column="CREATE_DEPART" property="createDepart" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="rptCategory" type="com.asiainfo.ereport.meta.RptCategory">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CATEGORY_NAME" property="categoryName"
+			jdbcType="VARCHAR" />
+		<result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+		<result column="OWN_STAFF_ID" property="ownStaffId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="reportComponentMeta" type="com.asiainfo.ereport.meta.ReportComponentMeta">
+		<id column="COMP_ID" property="compId" jdbcType="VARCHAR" />
+		<result column="REPORT_ID" property="reportId" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="DATASET_ID" property="datasetId" jdbcType="VARCHAR" />
+		<result column="DISPLAY_ORDER" property="displayOrder"
+			jdbcType="NUMERIC" />
+		<result column="LAYOUT_VAR" property="layoutVar" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getRptCategorys" parameterType="java.lang.String"
+		resultMap="rptCategory">
+		select a.* from td_rpt_category
+		a where a.id='ZDY' union all
+		SELECT a.*
+		FROM td_rpt_category a where
+		a.own_staff_id = #{_parameter}
+		 union all
+		SELECT a.*
+		FROM td_rpt_category a where a.id='defaulttype' AND a.own_staff_id IS NULL
+	</select>
+	<select id="oneReportMeta" parameterType="java.lang.String"
+		resultMap="reportMeta">
+		select
+		t.*
+		from td_rpt_report t where t.id=#{_parameter}
+	</select>
+	<select id="existsReportMeta" parameterType="com.asiainfo.ereport.meta.ReportMeta"
+		resultMap="reportMeta">
+		select
+		t.*
+		from td_rpt_report t where t.id=#{id}
+	</select>
+	<select id="getReportComponentMetas" parameterType="java.lang.String"
+		resultMap="reportComponentMeta">
+		select
+		t.*
+		from td_rpt_report_component t
+		where
+		REPORT_ID=#{_parameter}
+	</select>
+
+
+	<select id="oneReportComponentMeta" parameterType="map"
+		resultMap="reportComponentMeta">
+		select
+		t.*
+		from td_rpt_report_component t
+		where
+		REPORT_ID=#{reportId}
+		and COMP_ID=#{compId}
+	</select>
+	<select id="getReportMetas" parameterType="map"
+		resultMap="reportMeta">
+		select
+		t.*
+		from td_rpt_report t
+		where category=#{category} and ownerid=#{staffId,jdbcType=VARCHAR} and t.type='1'
+	</select>
+	<select id="countReportMeta" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		select
+		count(*)
+		from td_rpt_report t
+		where category=#{_parameter}
+	</select>
+	<insert id="insertReportMeta" parameterType="com.asiainfo.ereport.meta.ReportMeta">
+		insert into
+		td_rpt_report
+		(
+		id,category,name,right_code,layout_id,layout_content,
+		help_content,description,status,update_staff,update_depart,
+		update_date,remark,config,OWNERID,type
+		)
+		values(
+		#{id},#{category},#{name},
+		#{rightCode,jdbcType=VARCHAR},#{layoutId,jdbcType=VARCHAR},#{layoutContent,jdbcType=CLOB},#{helpContent,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},
+		#{status,jdbcType=NUMERIC},#{updateStaff,jdbcType=VARCHAR},#{updateDepart,jdbcType=VARCHAR},#{updateDate,jdbcType=DATE},#{remark,jdbcType=VARCHAR},
+		#{config,jdbcType=CLOB},#{ownerid,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertReportComponentMeta" parameterType="com.asiainfo.ereport.meta.ReportComponentMeta">
+		insert into
+		td_rpt_report_component
+		(
+		report_id,type,comp_id,dataset_id,display_order,layout_var
+		)
+		values(
+		#{reportId},#{type},#{compId,jdbcType=VARCHAR},#{datasetId,jdbcType=VARCHAR},#{displayOrder,jdbcType=NUMERIC},#{layoutVar,jdbcType=VARCHAR}
+		)
+	</insert>
+	<delete id="delReportComponentMeta" parameterType="com.asiainfo.ereport.meta.ReportMeta">
+		delete from
+		td_rpt_report_component where report_id=#{id,jdbcType=VARCHAR}
+	</delete>
+	<delete id="delRptCategory" parameterType="com.asiainfo.ereport.meta.RptCategory">
+		delete from
+		td_rpt_category where id=#{id,jdbcType=VARCHAR}
+	</delete>
+	<delete id="delReportMeta" parameterType="com.asiainfo.ereport.meta.ReportMeta">
+		delete from
+		td_rpt_report where id=#{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="updateReportMeta" parameterType="com.asiainfo.ereport.meta.ReportMeta">
+		update
+		td_rpt_report t
+		<set>
+		   <if test="category !=null and category !='' ">
+				t.CATEGORY = #{category},
+			</if>
+			<if test="name !=null and name !='' ">
+				t.NAME = #{name},
+			</if>
+			<if test="rightCode !=null and rightCode !='' ">
+				t.RIGHT_CODE = #{rightCode},
+			</if>
+			<if test="rightCode !=null and rightCode !='' ">
+				t.RIGHT_CODE = #{rightCode},
+			</if>
+			<if test="layoutId !=null and layoutId !='' ">
+				t.LAYOUT_ID = #{layoutId},
+			</if>
+			<if test="layoutContent !=null and layoutContent !='' ">
+				t.LAYOUT_CONTENT = #{layoutContent},
+			</if>
+			<if test="helpContent !=null and helpContent !='' ">
+				t.HELP_CONTENT = #{helpContent},
+			</if>
+			<if test="description !=null and description !='' ">
+				t.DESCRIPTION = #{description},
+			</if>
+			<if test="status !=null and status !='' ">
+				t.STATUS = #{status},
+			</if>
+			<if test="updateStaff !=null and updateStaff !='' ">
+				t.UPDATE_STAFF = #{updateStaff},
+			</if>
+			<if test="updateDepart !=null and updateDepart !='' ">
+				t.UPDATE_DEPART = #{updateDepart},
+			</if>
+			<if test="updateDate !=null and updateDate !='' ">
+				t.UPDATE_DATE = #{updateDate},
+			</if>
+			<if test="remark !=null and remark !='' ">
+				t.REMARK = #{remark},
+			</if>
+			<if test="config !=null and config !='' ">
+				t.CONFIG = #{config},
+			</if>
+		</set>
+		 where id=#{id}
+	</insert>
+	<insert id="insertRptCategory" parameterType="com.asiainfo.ereport.meta.RptCategory">
+		insert into
+		td_rpt_category
+		(
+			id,category_name,parent_id,own_staff_id
+		)
+		values(
+            #{id,jdbcType=VARCHAR},#{categoryName,jdbcType=VARCHAR},#{parentId,jdbcType=VARCHAR},#{ownStaffId,jdbcType=VARCHAR}
+        )
+	</insert>
+</mapper>

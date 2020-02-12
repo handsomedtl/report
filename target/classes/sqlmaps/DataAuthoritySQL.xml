@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DataAuthority" >
+	<select id="getDepartByEparchyCode" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT T.DEPART_ID DEPARTID,T.DEPART_NAME DEPARTNAME
+		  FROM TD_M_DEPART T
+		 WHERE T.RSVALUE2 = #{eparchyCode}
+		   AND T.DEPART_LEVEL = '2'
+		   AND T.DEPART_CODE NOT LIKE 'NMCU%'
+	</select>
+	
+	<select id="getDepartByAreaCode" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT T.DEPART_ID DEPARTID,T.DEPART_NAME DEPARTNAME
+		  FROM TD_M_DEPART T
+		 WHERE T.AREA_CODE = #{areaCode}
+		   AND T.DEPART_LEVEL = '3'
+		   AND T.DEPART_CODE NOT LIKE 'NMCU%'
+	</select>
+</mapper>

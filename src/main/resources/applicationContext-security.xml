@@ -1,0 +1,135 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-4.1.xsd
+		http://www.springframework.org/schema/util
+	    http://www.springframework.org/schema/util/spring-util-4.1.xsd">
+
+	<security:http pattern="/resources/**" security="none" />
+	<security:http pattern="/favicon.ico" security="none" />
+	<security:http pattern="/login.jsp" security="none" />
+	<security:http pattern="/login/getvalidcode.*" security="none" />
+	<security:http pattern="/login/tologin.*" security="none" />
+	<security:http pattern="/jsconfig/**" security="none" />
+	<security:http pattern="/ws/**" security="none" />
+	<security:http entry-point-ref="adminUserAuthenticationEntryPoint"
+		access-decision-manager-ref="voteAccessDecisionManagerBean"
+		authentication-manager-ref="authenticationManager" name="admin"
+		use-expressions="true">
+		<!-- <security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="securityInterceptor" 
+			/> -->
+		<security:custom-filter ref="adminAuthenticaionFilter"
+			position="FORM_LOGIN_FILTER" />
+		<security:csrf disabled="true" />
+		<security:headers>
+			<security:frame-options policy="SAMEORIGIN" />
+		</security:headers>
+		<security:intercept-url pattern="/admin/**"
+			access="isAuthenticated()" />
+		<security:intercept-url pattern="/custreport/**"
+			access="isAuthenticated()" />
+		<security:intercept-url pattern="/report/{reportId}/**"
+			access="@webSecurity.checkUserId(authentication,'report',#reportId) and isAuthenticated()" />
+	</security:http>
+
+	<!-- 管理员登录入口 -->
+	<bean id="adminUserAuthenticationEntryPoint"
+		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<constructor-arg>
+			<value>/login/tologin.jhtml</value>
+		</constructor-arg>
+	</bean>
+	<!-- <bean id="securityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor"> 
+		<beans:property name="authenticationManager" ref="authenticationManager" 
+		/> <beans:property name="accessDecisionManager" ref="voteAccessDecisionManagerBean" 
+		/> <beans:property name="securityMetadataSource" ref="securityMetadataSource" 
+		/> </bean> -->
+	<!-- 管理员登录验证 -->
+	<bean id="adminAuthenticaionFilter"
+		class="com.asiainfo.ewebframe.security.CaptchaAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationFailureHandler" ref="authenticationFailerHandler" />
+		<property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
+		<property name="filterProcessesUrl" value="/login/login.jhtml" />
+	</bean>
+
+	<!-- 会员登录失败 -->
+	<bean id="authenticationFailerHandler"
+		class="com.asiainfo.ewebframe.security.AuthenticationFailerHandler">
+		<property name="defaultFailureUrl" value="/login.jsp?error=true" />
+		<property name="memberLoginFailureUrl" value="/member/loginsys.jhtml?error=true" />
+	</bean>
+
+	<!-- 管理员用户认证服务 -->
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider
+			ref="daoAuthenticationProvider">
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<bean id="daoAuthenticationProvider"
+		class="com.asiainfo.ewebframe.security.UserInfoAuthenticationProvider">
+		<property name="hideUserNotFoundExceptions" value="false" />
+		<property name="userDetailsService" ref="userDetailInfoService" />
+		<property name="passwordEncoder" ref="passwordEncoder" />
+		<property name="saltSource" ref="saltSource" />
+
+	</bean>
+	<!-- 加密组件 -->
+	<bean id="passwordEncoder"
+		class="com.asiainfo.ewebframe.security.EncryptorPasswordEncoder">
+		<property name="encryptor" ref="encryptor" />
+	</bean>
+	<bean id="encryptor" class="com.asiainfo.eframe.util.Encryptor">
+	</bean>
+	<!-- 配置加密盐值 -->
+	<!-- <bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource"> 
+		<property name="userPropertyToUse" value="username" /> </bean> -->
+	<bean id="saltSource"
+		class="org.springframework.security.authentication.dao.SystemWideSaltSource">
+		<property name="systemWideSalt" value="00linkage" />
+	</bean>
+	<bean id="authDaoImpl" class="com.asiainfo.ewebframe.dao.impl.AuthDaoImpl"
+		parent="baseDao">
+	</bean>
+	<bean id="userDetailInfoService" class="com.asiainfo.ewebframe.security.UserDetailInfoService" />
+	<!-- 授权控制 -->
+	<bean id="userAccessDecisionManagerBean" class="com.asiainfo.ewebframe.security.AccessDecisionService">
+	</bean>
+
+	<!-- 权限描述服务 -->
+	<!-- <bean id="securityMetadataSource" class="com.asiainfo.ewebframe.security.InvocationSecurityMetadataSource"> 
+		<property name="intercepturls"> <list> <value>/report/**</value> <value>/admin/**</value> 
+		</list> </property> </bean> -->
+	<!-- 管理员登录成功 -->
+	<bean id="authenticationSuccessHandler" class="com.asiainfo.ewebframe.security.LoginSuccessHandler">
+		<property name="defaultTargetUrl" value="/admin/index.jhtml"></property>
+	</bean>
+	<security:global-method-security
+		pre-post-annotations="enabled" />
+
+	<bean id="voteAccessDecisionManagerBean"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<constructor-arg index="0" ref="decisionVoters" />
+		<property name="allowIfAllAbstainDecisions" value="false" />
+	</bean>
+	<util:list id="decisionVoters">
+		<bean class="com.asiainfo.ewebframe.security.voter.UserRoleVoter">
+			<property name="authDaoImpl" ref="authDaoImpl" />
+		</bean>
+		<bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+		<bean
+			class="org.springframework.security.web.access.expression.WebExpressionVoter"
+			id="expressionVoter">
+			<property name="expressionHandler" ref="expressionHandler" />
+		</bean>
+	</util:list>
+
+	<bean
+		class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"
+		id="expressionHandler" />
+</beans>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-lazy-init="true">
+	<!-- 加载配置文件 -->
+	<context:property-placeholder
+		location="classpath*:/config.properties,application.properties"
+		ignore-resource-not-found="true" ignore-unresolvable="true" />
+	<!-- 扫描组件 -->
+	<context:component-scan base-package="com.asiainfo">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	<!-- Spring Task的配置，用于定时检查规则配置文件的变更 -->
+	<task:annotation-driven />
+	<!-- 业务处理基础组件 -->
+	<bean id="baseService" class="com.asiainfo.eframe.service.impl.BaseServiceImpl">
+		<property name="baseDao" ref="baseDao" />
+	</bean>
+	<!-- 获取session 信息组件 -->
+	<bean id="sessionContextHolder"
+		class="com.asiainfo.ewebframe.service.impl.ContextHolderServiceImpl" />
+	<!-- 图形验证生成器 -->
+	<bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+		<property name="config">
+			<bean class="com.google.code.kaptcha.util.Config">
+				<constructor-arg>
+					<props>
+						<prop key="kaptcha.border">no</prop>
+						<prop key="kaptcha.border.color">105,179,90</prop>
+						<prop key="kaptcha.background.clear.from">255,255,255</prop>
+						<prop key="kaptcha.background.clear.to">WHITE</prop>
+						<prop key="kaptcha.textproducer.font.color">red</prop>
+						<prop key="kaptcha.image.width">130</prop>
+						<prop key="kaptcha.image.height">40</prop>
+						<prop key="kaptcha.textproducer.font.size">30</prop>
+						<prop key="kaptcha.textproducer.char.space">5</prop>
+						<prop key="kaptcha.session.key">validcode</prop>
+						<prop key="kaptcha.textproducer.char.length">4</prop>
+						<prop key="kaptcha.noise.color">105,179,90</prop>
+						<prop key="kaptcha.textproducer.font.names">宋体,楷体,微软雅黑</prop>
+						<prop key="kaptcha.noise.impl">com.google.code.kaptcha.impl.DefaultNoise</prop>
+						<prop key="kaptcha.obscurificator.impl">com.google.code.kaptcha.impl.FishEyeGimpy</prop>
+						<prop key="kaptcha.textproducer.impl">com.asiainfo.eframe.service.impl.KaptchaValidcodeProducer
+						</prop>
+					</props>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+	<!-- 以下是spring 表单验证组件配置 -->
+	<!-- 国际化配置 -->
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
+		<property name="defaultLocale" value="${locale}" />
+	</bean>
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:messages/messages</value>
+				<value>classpath:messages/Validation</value>
+			</list>
+		</property>
+		<property name="alwaysUseMessageFormat" value="false" />
+	</bean>
+	<cache:annotation-driven />
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+		<property name="cacheManager" ref="ehcache"></property>
+	</bean>
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache.xml">
+		</property>
+		<property name="shared" value="true">
+		</property>
+	</bean>
+	<bean id="dynamicFormEngine" class="com.asiainfo.ewebframe.ui.form.DynamicFormEngineImpl">
+		<property name="dynamicFromDataService" ref="defaultDynamicFromDataService" />
+	</bean>
+	<!-- 真是环境运行时候把 defaultDynamicFromDataService 替换成真正的实例 -->
+	<bean id="defaultDynamicFromDataService"
+		class="com.asiainfo.ewebframe.service.impl.DefaultDynamicFromDataService" />
+	<bean id="scriptBeanLoder" class="com.asiainfo.eframe.script.DataSourceScriptBeanLoder">
+		<property name="datasource" ref="XADataSource_cen1"></property>
+	</bean>
+	<bean id="scriptFactoryPostProcessor"
+		class="com.asiainfo.eframe.script.CustomScriptFactoryPostProcessor">
+		<property name="dataSource" ref="XADataSource_cen1"></property>
+	</bean>
+	<bean id="datasetMetaService" class="com.asiainfo.edata.meta.DefaultDatasetMetaService">
+		<property name="datasetConditionDao" ref="datasetConditionDao" />
+		<property name="fieldMetaDao" ref="fieldMetaDao" />
+		<property name="datasetMetaDao" ref="datasetMetaDao" />
+	</bean>
+	<bean id="datasetFactory" class="com.asiainfo.edata.DefaultDatasetFactory">
+		<property name="datasetMetaService" ref="datasetMetaService" />
+		<property name="queryDataset" ref="baseDao" />
+	</bean>
+</beans>

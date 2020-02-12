@@ -1,0 +1,37 @@
+<label for="${def.elementcode}"
+	class="control-label <#if def.labelclass??> ${def.labelclass}  <#elseif def.labelspan??> col-md-${def.labelspan} col-sm-4 col-xs-12 <#else> col-md-1 col-sm-4 col-xs-12</#if>">${def.lable}<#if def.required =="1"><span class='text-danger'>*</span></#if></label>
+<div class="<#if def.elementclass??> ${def.elementclass}  <#elseif def.elementspan??> col-md-${def.elementspan} col-sm-8 col-xs-12 <#else> col-md-3 col-sm-8 col-xs-12</#if>"
+	id="${def.elementcode}tree"></div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#${def.elementcode}tree').asiainfoTree({
+		treeid : '${(def.elementid)?c}',
+		fieldname : '${def.elementcode}',
+		treetype : '1',
+		title : '${def.formElementDef.title}',
+		listeners : ${listeners},
+		filterfields: ${filterfields},
+		filtervals:${filtervals},
+		readonly:!${def.editable?c}
+    <#if multiSelect??>
+     ,multiSelect:${multiSelect?c}
+    </#if>
+   <#if selectLeaf??>
+    , selectLeaf:${(selectLeaf)?c}
+   </#if> 
+   <#if def.required =="1">, required:true </#if>
+   <#if text??>
+   , defaultvalue:{
+	   text:'${text}',
+	   value:'${value}'
+   }
+   </#if> 
+   <#if tooltipmess??>
+   , tooltipmess:'${(tooltipmess)}'
+  </#if> 
+  <#if messcontainer??>
+  , messcontainer:'${(messcontainer)}'
+  </#if> 
+	});
+});
+</script>
